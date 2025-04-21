@@ -12106,17 +12106,8 @@ const styles$3 = {
   valid,
   inValid
 };
-function Input({ value, placeholder, isValid, onChange, maxLength }) {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
-    "input",
-    {
-      value,
-      onChange,
-      placeholder,
-      className: `${styles$3.input} ${isValid ? styles$3.valid : styles$3.inValid}`,
-      maxLength
-    }
-  );
+function Input({ isValid, className, ...rest }) {
+  return /* @__PURE__ */ jsxRuntimeExports.jsx("input", { className: `${styles$3.input} ${isValid ? styles$3.valid : styles$3.inValid} ${className ?? ""}`, ...rest });
 }
 function Title({ title }) {
   return /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { children: title });
@@ -12133,17 +12124,23 @@ function Label({ text }) {
 function Error$1({ message }) {
   return /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: styles$4.errorMessage, children: message });
 }
-function InputWrapper({ numbers, onChange, valid: valid2, placeholders = [], maxLength }) {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$4.inputWrapper, children: numbers.map((value, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+function InputWrapper({
+  fields,
+  onChange,
+  valid: valid2,
+  placeholders = {},
+  maxLength
+}) {
+  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$4.inputWrapper, children: fields.map((field) => /* @__PURE__ */ jsxRuntimeExports.jsx(
     Input,
     {
-      value,
-      isValid: valid2[index],
-      placeholder: placeholders[index],
-      onChange: (e) => onChange(index, e.target.value),
+      value: field.value,
+      isValid: valid2[field.key],
+      placeholder: placeholders[field.key],
+      onChange: (e) => onChange(field.key, e.target.value),
       maxLength
     },
-    index
+    field.key
   )) });
 }
 const InputSection = {
@@ -12155,23 +12152,33 @@ const InputSection = {
   Label
 };
 function CardNumberSection({ cardNumbers, setCardNumbers, setCardLogo }) {
-  const [cardValidity, setCardValidity] = reactExports.useState([true, true, true, true]);
-  const handleCardNumberChange = (index, value) => {
-    const isValid = /^[0-9]*$/.test(value);
-    const updatedNumbers = [...cardNumbers];
-    updatedNumbers[index] = value;
-    setCardNumbers(updatedNumbers);
-    const updatedValidity = [...cardValidity];
-    updatedValidity[index] = isValid;
-    setCardValidity(updatedValidity);
-    if (updatedNumbers[0].startsWith("4")) {
-      setCardLogo("visa");
-    } else if (51 <= Number(updatedNumbers[0].slice(0, 2)) && Number(updatedNumbers[0].slice(0, 2)) <= 55) {
-      setCardLogo("master");
-    } else {
-      setCardLogo("");
-    }
+  const [cardValidity, setCardValidity] = reactExports.useState({
+    first: true,
+    second: true,
+    third: true,
+    fourth: true
+  });
+  const handleCardNumberChange = (key, value) => {
+    setCardNumbers((prev) => ({ ...prev, [key]: value }));
+    const isValidNumber = validateNumberValidity(value);
+    setCardValidity((prev) => ({ ...prev, [key]: isValidNumber }));
+    const first = key === "first" ? value : cardNumbers.first;
+    updateCardLogoFromNumbers(first);
   };
+  function validateNumberValidity(value) {
+    return /^[0-9]*$/.test(value);
+  }
+  function updateCardLogoFromNumbers(numbers) {
+    if (numbers.startsWith("4")) {
+      setCardLogo("visa");
+      return;
+    }
+    if (51 <= Number(numbers.slice(0, 2)) && Number(numbers.slice(0, 2)) <= 55) {
+      setCardLogo("master");
+      return;
+    }
+    return setCardLogo("");
+  }
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$5.sectionContainer, children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs(InputSection.TitleWrapper, { children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(InputSection.Title, { title: "결제할 카드 번호를 입력해 주세요" }),
@@ -12182,14 +12189,29 @@ function CardNumberSection({ cardNumbers, setCardNumbers, setCardLogo }) {
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         InputSection.InputWrapper,
         {
-          numbers: cardNumbers,
+          fields: [
+            { key: "first", value: cardNumbers.first },
+            { key: "second", value: cardNumbers.second },
+            { key: "third", value: cardNumbers.third },
+            { key: "fourth", value: cardNumbers.fourth }
+          ],
           onChange: handleCardNumberChange,
-          valid: cardValidity,
-          placeholders: ["1234", "1234", "1234", "1234"],
+          valid: {
+            first: cardValidity.first,
+            second: cardValidity.second,
+            third: cardValidity.third,
+            fourth: cardValidity.fourth
+          },
+          placeholders: {
+            first: "1234",
+            second: "1234",
+            third: "1234",
+            fourth: "1234"
+          },
           maxLength: 4
         }
       ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(InputSection.Error, { message: !cardValidity.every((v) => v) ? "숫자만 입력 가능합니다." : "" })
+      /* @__PURE__ */ jsxRuntimeExports.jsx(InputSection.Error, { message: Object.values(cardValidity).every((v) => v) ? "" : "숫자만 입력 가능합니다." })
     ] })
   ] });
 }
@@ -12197,33 +12219,36 @@ const inputSection$1 = "_inputSection_661i3_6";
 const styles$2 = {
   inputSection: inputSection$1
 };
+function validateNumberError(value) {
+  if (!/^[0-9]*$/.test(value)) {
+    return "숫자만 입력 가능합니다.";
+  }
+}
+function validateMonthRangeError(value) {
+  const month = Number(value);
+  if (value !== "" && (month < 1 || month > 12)) {
+    return "1부터 12 사이의 숫자를 입력해주세요.";
+  }
+}
+function validateYearLengthError(value) {
+  if (value !== "" && value.length !== 2) {
+    return "2자리 숫자를 입력해주세요.";
+  }
+}
+function validateCvcLengthError(value) {
+  if (value !== "" && value.length !== 3) {
+    return "CVC는 3자리여야 합니다.";
+  }
+}
 function CardExpirationSection({ expiration, setExpiration }) {
-  const [expirationError, setExpirationError] = reactExports.useState(["", ""]);
-  const handleExpirationChange = (index, value) => {
-    let errorMsg = "";
-    if (!/^[0-9]*$/.test(value)) {
-      errorMsg = "숫자만 입력 가능합니다.";
-      return;
-    }
-    if (index === 0) {
-      if (value !== "") {
-        const month = Number(value);
-        if (month < 1 || month > 12) {
-          errorMsg = "1부터 12 사이의 숫자를 입력해주세요.";
-        }
-      }
-    }
-    if (index === 1) {
-      if (value !== "" && value.length !== 2) {
-        errorMsg = "2자리 숫자를 입력해주세요.";
-      }
-    }
-    const updatedExpiration = [...expiration];
-    updatedExpiration[index] = value;
-    setExpiration(updatedExpiration);
-    const updatedError = [...expirationError];
-    updatedError[index] = errorMsg;
-    setExpirationError(updatedError);
+  const [expirationError, setExpirationError] = reactExports.useState({
+    month: "",
+    year: ""
+  });
+  const handleExpirationChange = (key, value) => {
+    setExpiration({ ...expiration, [key]: value });
+    const errorMsg = key === "month" && validateMonthRangeError(value) || key === "year" && validateYearLengthError(value) || validateNumberError(value) || "";
+    setExpirationError((prev) => ({ ...prev, [key]: errorMsg }));
   };
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$2.sectionContainer, children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs(InputSection.TitleWrapper, { children: [
@@ -12235,14 +12260,20 @@ function CardExpirationSection({ expiration, setExpiration }) {
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         InputSection.InputWrapper,
         {
-          numbers: expiration,
+          fields: [
+            { key: "month", value: expiration.month },
+            { key: "year", value: expiration.year }
+          ],
           onChange: handleExpirationChange,
-          valid: expirationError.map((msg) => msg === ""),
-          placeholders: ["MM", "YY"],
+          valid: { month: expirationError.month === "", year: expirationError.year === "" },
+          placeholders: { month: "MM", year: "YY" },
           maxLength: 2
         }
       ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: expirationError.map((msg, index) => msg && /* @__PURE__ */ jsxRuntimeExports.jsx(InputSection.Error, { message: msg }, index)) })
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        expirationError.month && /* @__PURE__ */ jsxRuntimeExports.jsx(InputSection.Error, { message: expirationError.month }),
+        expirationError.year && /* @__PURE__ */ jsxRuntimeExports.jsx(InputSection.Error, { message: expirationError.year })
+      ] })
     ] })
   ] });
 }
@@ -12266,25 +12297,33 @@ const styles$1 = {
   dotWrapper,
   dot
 };
-function Card({
+function CardPreview({
   numbers,
   cardLogo: cardLogo2,
   expiration
 }) {
+  const numberKeys = ["first", "second", "third", "fourth"];
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$1.card, children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$1.chipWrapper, children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$1.chip }),
-      cardLogo2 === "" ? null : /* @__PURE__ */ jsxRuntimeExports.jsx("img", { className: styles$1.cardLogo, src: cardLogo2 === "visa" ? "images/visa.jpg" : "images/mastercard.jpg" })
+      cardLogo2 && /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "img",
+        {
+          className: styles$1.cardLogo,
+          src: cardLogo2 === "visa" ? "images/visa.jpg" : "images/mastercard.jpg",
+          alt: cardLogo2 === "visa" ? "visa logo" : "mastercard logo"
+        }
+      )
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$1.numberWrapper, children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$1.cardNumberWrapper, children: [
-        numbers.slice(0, 2).map((number, index) => /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: styles$1.cardNumber, children: number }, index)),
-        numbers.slice(2).map((number, i) => /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$1.dotWrapper, children: Array.from({ length: number.length }).map((_, j) => /* @__PURE__ */ jsxRuntimeExports.jsx(Dot, {}, j)) }, i))
+        numberKeys.slice(0, 2).map((key) => /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: styles$1.cardNumber, children: numbers[key] }, key)),
+        numberKeys.slice(2).map((key) => /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$1.dotWrapper, children: Array.from({ length: numbers[key].length }).map((_, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(Dot, {}, i)) }, key))
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$1.cardNumber, children: [
-        expiration[0],
-        expiration[0] && "/",
-        expiration[1]
+        expiration.month,
+        expiration.month && "/",
+        expiration.year
       ] })
     ] })
   ] });
@@ -12297,17 +12336,15 @@ const styles = {
   inputSection
 };
 function CvcSection({ cvc, setCvc }) {
-  const [cvcError, setCvcError] = reactExports.useState("");
-  const handleCvcChange = (value) => {
-    let errorMsg = "";
-    if (!/^[0-9]*$/.test(value)) {
-      errorMsg = "숫자만 입력 가능합니다.";
-    } else if (value !== "" && value.length !== 3) {
-      errorMsg = "CVC는 3자리여야 합니다.";
-    }
+  const [cvcError, setCvcError] = reactExports.useState({ cvc: "" });
+  const handleChange = (key, value) => {
     setCvc(value);
-    setCvcError(errorMsg);
+    const errorMsg = getCvcError(value) || "";
+    setCvcError((prev) => ({ ...prev, [key]: errorMsg }));
   };
+  function getCvcError(value) {
+    return validateNumberError(value) || validateCvcLengthError(value) || "";
+  }
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles.sectionContainer, children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(InputSection.TitleWrapper, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(InputSection.Title, { title: "CVC 번호를 입력해 주세요" }) }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles.inputSection, children: [
@@ -12315,24 +12352,24 @@ function CvcSection({ cvc, setCvc }) {
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         InputSection.InputWrapper,
         {
-          numbers: [cvc],
-          onChange: (_index, value) => handleCvcChange(value),
-          valid: [cvcError === ""],
-          placeholders: ["123"],
+          fields: [{ key: "cvc", value: cvc }],
+          onChange: handleChange,
+          valid: { cvc: cvcError.cvc === "" },
+          placeholders: { cvc: "123" },
           maxLength: 3
         }
       ),
-      cvcError && /* @__PURE__ */ jsxRuntimeExports.jsx(InputSection.Error, { message: cvcError })
+      cvcError.cvc && /* @__PURE__ */ jsxRuntimeExports.jsx(InputSection.Error, { message: cvcError.cvc })
     ] })
   ] });
 }
 function App() {
-  const [cardNumbers, setCardNumbers] = reactExports.useState(["", "", "", ""]);
+  const [cardNumbers, setCardNumbers] = reactExports.useState({ first: "", second: "", third: "", fourth: "" });
   const [cardLogo2, setCardLogo] = reactExports.useState("");
-  const [expiration, setExpiration] = reactExports.useState(["", ""]);
+  const [expiration, setExpiration] = reactExports.useState({ month: "", year: "" });
   const [cvc, setCvc] = reactExports.useState("");
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$6.appContainer, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx(Card, { numbers: cardNumbers, cardLogo: cardLogo2, expiration }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(CardPreview, { numbers: cardNumbers, cardLogo: cardLogo2, expiration }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(CardNumberSection, { cardNumbers, setCardNumbers, setCardLogo }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(CardExpirationSection, { expiration, setExpiration }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(CvcSection, { cvc, setCvc })
