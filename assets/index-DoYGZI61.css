@@ -4,6 +4,15 @@
   --color-gray-10: #acacac;
   --color-gray-20: #8b95a1;
   --color-red: #ff3d3d;
+
+  --color-card-BC카드: #f04651;
+  --color-card-신한카드: #0046ff;
+  --color-card-카카오뱅크: #ffe600;
+  --color-card-현대카드: #000000;
+  --color-card-우리카드: #007bc8;
+  --color-card-롯데카드: #ed1c24;
+  --color-card-하나카드: #009490;
+  --color-card-국민카드: #6a6056;
 }
 /* http://meyerweb.com/eric/tools/css/reset/
    v2.0 | 20110126
@@ -233,78 +242,76 @@ button {
 * {
   box-sizing: border-box;
 }
-._appContainer_p70xu_1 {
+._container_1sl69_1 {
   display: flex;
   flex-direction: column;
   width: 315px;
-  margin: auto;
-  gap: 45px;
-  height: 100vh;
+  margin: 20px auto;
+  gap: 20px;
   justify-content: center;
 }
 
-._inputWrapper_p70xu_11 {
+._inputWrapper_1sl69_10 {
   display: flex;
   gap: 10px;
 }
 
-._inputTitle_p70xu_16 {
+._inputTitle_1sl69_15 {
   font-size: 12px;
 }
 
-._errorMessage_p70xu_20 {
+._errorMessage_1sl69_19 {
   font-size: 9.5px;
   margin-top: 8px;
   color: var(--color-red);
 }
 
-._titleWrapper_p70xu_26 h1 {
+._titleWrapper_1sl69_25 h1 {
   font-weight: 700;
   font-size: 18px;
 }
 
-._titleWrapper_p70xu_26 p {
+._titleWrapper_1sl69_25 p {
   font-weight: 400;
   font-size: 9.5px;
   color: var(--color-gray-20);
   margin-bottom: 16px;
 }
-._inputWrapper_661i3_1 {
+._inputWrapper_jtryc_1 {
   display: flex;
   gap: 10px;
 }
 
-._inputSection_661i3_6 {
+._FieldGroup_jtryc_6 {
   height: 77px;
 }
-._inputWrapper_1nfxl_1 {
-  display: flex;
-  gap: 10px;
-}
-
-._inputTitle_1nfxl_6 {
-  font-size: 12px;
-}
-
-._hidden_1nfxl_10 {
+._hidden_1czru_1 {
   visibility: hidden;
 }
-._errorMessage_1nfxl_13 {
+._errorMessage_1czru_4 {
   font-size: 9.5px;
   margin-top: 8px;
   color: var(--color-red);
 }
 
-._titleWrapper_1nfxl_19 h1 {
+._titleWrapper_1czru_10 h1 {
   font-weight: 700;
   font-size: 18px;
 }
 
-._titleWrapper_1nfxl_19 p {
+._titleWrapper_1czru_10 p {
   font-weight: 400;
   font-size: 9.5px;
   color: var(--color-gray-20);
   margin-bottom: 16px;
+}
+
+._fieldLabel_1czru_22 {
+  font-size: 12px;
+}
+._inputWrapper_1gkzr_1 {
+  display: flex;
+  gap: 10px;
 }
 ._input_dcqa9_1 {
   width: 100%;
@@ -328,15 +335,15 @@ button {
 ._input_dcqa9_1:focus._inValid_dcqa9_12 {
   border: 1px solid var(--color-red);
 }
-._inputWrapper_661i3_1 {
+._inputWrapper_jtryc_1 {
   display: flex;
   gap: 10px;
 }
 
-._inputSection_661i3_6 {
+._FieldGroup_jtryc_6 {
   height: 77px;
 }
-._card_eoje1_1 {
+._card_1mpvq_1 {
   width: 212px;
   height: 132px;
   border-radius: 4px;
@@ -345,41 +352,41 @@ button {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  margin: 0px auto;
+  margin: 20px auto;
 }
 
-._numberWrapper_eoje1_13 {
+._numberWrapper_1mpvq_13 {
   padding: 0 25px 12px 17px;
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
-._chipWrapper_eoje1_19 {
+._chipWrapper_1mpvq_19 {
   display: flex;
   justify-content: space-between;
   padding: 8px 12px;
 }
 
-._cardLogo_eoje1_25 {
+._cardLogo_1mpvq_25 {
   width: 36px;
   height: 22px;
   border-radius: 4px;
 }
 
-._chip_eoje1_19 {
+._chip_1mpvq_19 {
   width: 36px;
   height: 22px;
   border-radius: 4px;
   background-color: #ddcd78;
 }
 
-._cardNumberWrapper_eoje1_38 {
+._cardNumberWrapper_1mpvq_38 {
   display: flex;
   gap: 10px;
   align-items: center;
 }
 
-._cardNumber_eoje1_38 {
+._cardNumber_1mpvq_38 {
   color: var(--color-white);
   font-size: 14px;
   font-weight: 500;
@@ -387,22 +394,92 @@ button {
   letter-spacing: 2.24px;
 }
 
-._dotWrapper_eoje1_52 {
+._dotWrapper_1mpvq_52 {
   display: flex;
   gap: 4px;
 }
 
-._dot_eoje1_52 {
+._dot_1mpvq_52 {
   width: 4px;
   height: 4px;
   border-radius: 100%;
   background-color: white;
 }
-._inputWrapper_661i3_1 {
+._inputWrapper_jtryc_1 {
   display: flex;
   gap: 10px;
 }
 
-._inputSection_661i3_6 {
+._FieldGroup_jtryc_6 {
   height: 77px;
+}
+._container_1wdjo_1 {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+._selectWrapper_1wdjo_7 {
+  display: absolute;
+}
+
+._select_1wdjo_7 {
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  appearance: none;
+  cursor: pointer;
+}
+
+._select_1wdjo_7:focus {
+  outline: none;
+  border: 1px solid var(--color-black);
+}
+
+._select_1wdjo_7 option {
+  padding: 8px;
+  font-size: 14px;
+}
+
+._icon_1wdjo_32 {
+  width: 15.28px;
+  height: 15.28px;
+  position: relative;
+  bottom: 28px;
+  left: 290px;
+}
+._inputWrapper_jtryc_1 {
+  display: flex;
+  gap: 10px;
+}
+
+._FieldGroup_jtryc_6 {
+  height: 77px;
+}
+._button_dbyj6_1 {
+  width: 100%;
+  border-radius: 2px;
+  background-color: var(--color-black);
+  color: var(--color-white);
+  cursor: pointer;
+  font-size: 16px;
+}
+._container_14tp7_1 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 315px;
+  margin: 20px auto;
+  gap: 45px;
+  height: 100vh;
+}
+
+._description_14tp7_12 {
+  font-size: 25px;
+  font-weight: 700;
+  text-align: center;
 }
